@@ -1,0 +1,183 @@
+export this table - [ODS_FIRSTBRIDGE_V2.SERIES] and save as gs://raj_test/ODS_FIRSTBRIDGE_V2_SERIES.csv
+
+Schema - 
+"","","","","","",
+	                      "","","","fBCA_PRICE_SOURCE_TYPE_ID","",
+	                      "", "","ytm"
+[  {
+    "name":"fISSUER_CD",
+    "type":"string",
+    },
+    {
+        "name":"fOFFERING_DATE_INT",
+        "type":"integer",
+    },
+    {
+        "name":"fCUSIP_7TH",
+        "type":"string",
+    },
+    {
+        "name":"fISSUE_ID",
+        "type":"integer",
+    },
+    {
+        "name":"fOFFER_TYPE",
+        "type":"string",
+    },
+    {
+        "name":"fIS_CALLABLE",
+        "type":"string",
+    },
+    {
+        "name":"fDEFAULT_FLAG",
+        "type":"string",
+    },
+    {
+        "name":"fCAPITAL_PURPOSE",
+        "type":"string",
+    },
+    {
+        "name":"fAS_OF_DATE_INT",
+        "type":"integer",
+    },
+    {
+        "name":"fBCA_PRICE_SOURCE_TYPE_ID",
+        "type":"integer",
+    },
+    {
+        "name":"fBCA_PRICE_SOURCE_ID",
+        "type":"string",
+    },
+    {
+        "name":"fBCA_PRICE_TYPE_ID",
+        "type":"string",
+    },
+    {
+        "name":"fSERIES_COUNT",
+        "type":"integer",
+    },
+    {"name":"ytm",
+     "type":"record",
+     "mode":"repeated",
+      "fields":[
+         {"name":"x",
+          "type":"float"
+          },
+          {
+           "name":"y",
+           "type":"float"
+           }
+      ]
+    }
+]
+
+
+NOTE: The output file needs to replaced --> [, to [ and , ] to ]
+------------------------------
+
+
+rm(list=ls(all=TRUE))
+wd <- "C:/Users/R/Work/BestCreditAnalysis/Dev/rawdata/ytm"
+setwd(wd)
+inputFileWD <- paste(wd, "/input_test", sep = "")
+#files <- list.files(path=inputFileWD, pattern="*", full.names=T, recursive=FALSE)
+file.names <- dir(inputFileWD, pattern ="*")
+print(file.names)
+for(i in 1:length(file.names)){
+	
+	tmpInputFile <- file.names[i] 
+	inputFile <- paste(inputFileWD, "/", tmpInputFile, sep = "")
+	print(inputFile)
+	outputFile <- paste("output/", chartr(".", "_", tmpInputFile), "_regr_result.csv" , sep = "")
+	warningFile <-  paste("output/", chartr(".", "_", tmpInputFile), "_warning.csv" , sep = "")
+	errorFile <-  paste("output/", chartr(".", "_", tmpInputFile), "_error.csv" , sep = "")
+	oHeader <- data.frame("fISSUER_CD","fOFFERING_DATE_INT","fCUSIP_7TH","fISSUE_ID","fOFFER_TYPE","fIS_CALLABLE",
+	                      "fDEFAULT_FLAG","fCAPITAL_PURPOSE","fAS_OF_DATE_INT","fBCA_PRICE_SOURCE_TYPE_ID","fBCA_PRICE_SOURCE_ID",
+	                      "fBCA_PRICE_TYPE_ID", "SERIES_COUNT","ytm")
+	write.table(oHeader, file=outputFile , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+	#write the header line in the output file
+	con  <- file(inputFile, open = "r")
+	i <- 1
+	while (length(oneLine <- readLines(con, n = 1)) > 0) {
+	  # first line in the file is header so skip the first line
+	   myLine <- unlist((strsplit(oneLine, ",")))
+	   
+	   try (
+	    
+	       if (i > 1) {
+	          
+                  #print(myLine)
+                  fISSUER_CD = myLine[1]
+                  fOFFERING_DATE_INT = myLine[2]
+                  fCUSIP_7TH = myLine[3]
+                  fISSUE_ID = myLine[4]
+                  fOFFER_TYPE = myLine[5]
+                  fIS_CALLABLE = myLine[6]
+                  fDEFAULT_FLAG = myLine[7]
+                  fCAPITAL_PURPOSE = myLine[8]
+                  fAS_OF_DATE_INT = myLine[9] 
+                  fBCA_PRICE_SOURCE_TYPE_ID = myLine[10]
+                  fBCA_PRICE_SOURCE_ID = myLine[11]
+                  fBCA_PRICE_TYPE_ID = myLine[12]
+                  YTM_MAT = myLine[13]
+                  fSERIES_COUNT = myLine[14]
+                  #print(YTM_MAT)
+                  ytmData <- unlist((strsplit(YTM_MAT, "[|]")))
+                  #print(ytmData)
+                  tmp <- unlist(strsplit(ytmData, "[:]"))
+                  #print(tmp)
+	          mat <- matrix(tmp, ncol=2, byrow=TRUE)
+                  
+                  print(mat)
+                  df   <- as.data.frame(mat)
+                  print(df)
+                  colnames(df) <- c("X_POS", "fYTM")
+                  df$X_POS = as.numeric(levels(df$X_POS))[df$X_POS]
+                  df$fYTM = as.numeric(levels(df$fYTM))[df$fYTM]
+                  sorted_ytm <- df[order(df$X_POS),]
+	          print(sorted_ytm)
+	          x<-sorted_ytm$X_POS
+	          y<-sorted_ytm$fYTM
+	          xout<-sort(c(seq(min(x), ceiling(max(x)), by = 1), x), decreasing = FALSE, na.last = NA)
+	          result_trs <-spline(x, y, n = 3*length(x), method = "fmm", xmin = min(x), xmax = max(x), xout, ties = mean)
+ISSUER_CD<-gsub(" ", "", gsub(",", "", toString( c('"fISSUER_CD":','"',toString(fISSUER_CD, width = NULL),'"'),width=NULL)))
+OFFERING_DATE_INT<-gsub(" ", "", gsub(",", "", toString( c('"fOFFERING_DATE_INT":','"',toString(fOFFERING_DATE_INT, width = NULL),'"'),width=NULL)))
+
+CUSIP_7TH<-gsub(" ", "", gsub(",", "", toString( c('"fCUSIP_7TH":','"',toString(fCUSIP_7TH, width = NULL),'"'),width=NULL)))
+ISSUE_ID<-gsub(" ", "", gsub(",", "", toString( c('"fISSUE_ID":','"',toString(fISSUE_ID, width = NULL),'"'),width=NULL)))
+OFFER_TYPE<-gsub(" ", "", gsub(",", "", toString( c('"fOFFER_TYPE":','"',toString(fOFFER_TYPE, width = NULL),'"'),width=NULL)))
+IS_CALLABLE<-gsub(" ", "", gsub(",", "", toString( c('"fIS_CALLABLE":','"',toString(fIS_CALLABLE, width = NULL),'"'),width=NULL)))
+DEFAULT_FLAG<-gsub(" ", "", gsub(",", "", toString( c('"fDEFAULT_FLAG":','"',toString(fDEFAULT_FLAG, width = NULL),'"'),width=NULL)))
+CAPITAL_PURPOSE<-gsub(" ", "", gsub(",", "", toString( c('"fCAPITAL_PURPOSE":','"',toString(fCAPITAL_PURPOSE, width = NULL),'"'),width=NULL)))
+AS_OF_DATE_INT<-gsub(" ", "", gsub(",", "", toString( c('"fAS_OF_DATE_INT":','"',toString(fAS_OF_DATE_INT, width = NULL),'"'),width=NULL)))
+BCA_PRICE_SOURCE_TYPE_ID<-gsub(" ", "", gsub(",", "", toString( c('"fBCA_PRICE_SOURCE_TYPE_ID":','"',toString(fBCA_PRICE_SOURCE_TYPE_ID, width = NULL),'"'),width=NULL)))
+BCA_PRICE_SOURCE_ID<-gsub(" ", "", gsub(",", "", toString( c('"fBCA_PRICE_SOURCE_ID":','"',toString(fBCA_PRICE_SOURCE_ID, width = NULL),'"'),width=NULL)))
+BCA_PRICE_TYPE_ID<-gsub(" ", "", gsub(",", "", toString( c('"fBCA_PRICE_TYPE_ID":','"',toString(fBCA_PRICE_TYPE_ID, width = NULL),'"'),width=NULL)))
+SERIES_COUNT<-gsub(" ", "", gsub(",", "", toString( c('"fSERIES_COUNT":','"',toString(fSERIES_COUNT, width = NULL),'"'),width=NULL)))
+
+df<-paste('{"x"',":",'"',result_trs$x,'",','"y"',":",'"',result_trs$y,'"}',sep = "")
+t_df <- toString( c('"ytm":[', toString( (t(df)), width=NULL), "]"), width=NULL)
+result_fdf<-data.frame(ISSUER_CD, 
+                       OFFERING_DATE_INT,
+                       CUSIP_7TH,
+                       ISSUE_ID,
+                       OFFER_TYPE,
+                       IS_CALLABLE,
+                       DEFAULT_FLAG,
+                       CAPITAL_PURPOSE,
+                       AS_OF_DATE_INT,
+                       BCA_PRICE_SOURCE_TYPE_ID,
+                       BCA_PRICE_SOURCE_ID,
+                       BCA_PRICE_TYPE_ID,
+                       SERIES_COUNT,
+                       t_df)
+write.table(result_fdf, file=outputFile , sep = ",", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)	          
+
+	       }
+	     #print(i)
+	     
+	   ) # try ends here
+	   i <- i + 1
+	}  # while loop ends here
+	close(con)
+} # for-loop ends

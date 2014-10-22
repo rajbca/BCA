@@ -1,0 +1,103 @@
+--ran the below query and saved as C:/Users/R/Work/BestCreditAnalysis/Dev/rawdata/treasury/input_1/
+SELECT 
+ DATE_INT DATE_INT,
+ 0 ZERO_M,
+ ONE_MONTH,
+ THREE_MONTHS,
+ SIX_MONTHS,
+ ONE_YEAR,
+ TWO_YEARS,
+ THREE_YEARS,
+ FIVE_YEARS,
+ SEVEN_YEARS,
+ TEN_YEARS,
+ TWENTY_YEARS,
+ THIRTY_YEARS
+FROM [ODS_BCA_GENERIC.DAILY_TREASURY_RATE] 
+--WHERE DATE_INT = 20140102
+
+
+
+------------------------------------
+the file name on my laptop is - C:\Users\R\Work\BestCreditAnalysis\Dev\rawdata\treasury\output\treasury_yield_csv_cubic_spline.csv
+loaded the file to google cloud storage at this location - Buckets /  raj_test
+
+then uploaded the file in into this table - ODS_BCA_GENERIC.TREASURY_YIELD_CURVE_INTERPOLATED
+used google storage location for the file - gs://raj_test/treasury_yield_csv_cubic_spline.csv
+used this schema - 
+as_of_date_int:integer,tr_0_m:float,tr_1_m:float,tr_2_m:float,tr_3_m:float,tr_4_m:float,tr_5_m:float,tr_6_m:float,tr_7_m:float,tr_8_m:float,tr_9_m:float,tr_10_m:float,tr_11_m:float,tr_12_m:float,tr_13_m:float,tr_14_m:float,tr_15_m:float,tr_16_m:float,tr_17_m:float,tr_18_m:float,tr_19_m:float,tr_20_m:float,tr_21_m:float,tr_22_m:float,tr_23_m:float,tr_24_m:float,tr_25_m:float,tr_26_m:float,tr_27_m:float,tr_28_m:float,tr_29_m:float,tr_30_m:float,tr_31_m:float,tr_32_m:float,tr_33_m:float,tr_34_m:float,tr_35_m:float,tr_36_m:float,tr_37_m:float,tr_38_m:float,tr_39_m:float,tr_40_m:float,tr_41_m:float,tr_42_m:float,tr_43_m:float,tr_44_m:float,tr_45_m:float,tr_46_m:float,tr_47_m:float,tr_48_m:float,tr_49_m:float,tr_50_m:float,tr_51_m:float,tr_52_m:float,tr_53_m:float,tr_54_m:float,tr_55_m:float,tr_56_m:float,tr_57_m:float,tr_58_m:float,tr_59_m:float,tr_60_m:float,tr_61_m:float,tr_62_m:float,tr_63_m:float,tr_64_m:float,tr_65_m:float,tr_66_m:float,tr_67_m:float,tr_68_m:float,tr_69_m:float,tr_70_m:float,tr_71_m:float,tr_72_m:float,tr_73_m:float,tr_74_m:float,tr_75_m:float,tr_76_m:float,tr_77_m:float,tr_78_m:float,tr_79_m:float,tr_80_m:float,tr_81_m:float,tr_82_m:float,tr_83_m:float,tr_84_m:float,tr_85_m:float,tr_86_m:float,tr_87_m:float,tr_88_m:float,tr_89_m:float,tr_90_m:float,tr_91_m:float,tr_92_m:float,tr_93_m:float,tr_94_m:float,tr_95_m:float,tr_96_m:float,tr_97_m:float,tr_98_m:float,tr_99_m:float,tr_100_m:float,tr_101_m:float,tr_102_m:float,tr_103_m:float,tr_104_m:float,tr_105_m:float,tr_106_m:float,tr_107_m:float,tr_108_m:float,tr_109_m:float,tr_110_m:float,tr_111_m:float,tr_112_m:float,tr_113_m:float,tr_114_m:float,tr_115_m:float,tr_116_m:float,tr_117_m:float,tr_118_m:float,tr_119_m:float,tr_120_m:float,tr_121_m:float,tr_122_m:float,tr_123_m:float,tr_124_m:float,tr_125_m:float,tr_126_m:float,tr_127_m:float,tr_128_m:float,tr_129_m:float,tr_130_m:float,tr_131_m:float,tr_132_m:float,tr_133_m:float,tr_134_m:float,tr_135_m:float,tr_136_m:float,tr_137_m:float,tr_138_m:float,tr_139_m:float,tr_140_m:float,tr_141_m:float,tr_142_m:float,tr_143_m:float,tr_144_m:float,tr_145_m:float,tr_146_m:float,tr_147_m:float,tr_148_m:float,tr_149_m:float,tr_150_m:float,tr_151_m:float,tr_152_m:float,tr_153_m:float,tr_154_m:float,tr_155_m:float,tr_156_m:float,tr_157_m:float,tr_158_m:float,tr_159_m:float,tr_160_m:float,tr_161_m:float,tr_162_m:float,tr_163_m:float,tr_164_m:float,tr_165_m:float,tr_166_m:float,tr_167_m:float,tr_168_m:float,tr_169_m:float,tr_170_m:float,tr_171_m:float,tr_172_m:float,tr_173_m:float,tr_174_m:float,tr_175_m:float,tr_176_m:float,tr_177_m:float,tr_178_m:float,tr_179_m:float,tr_180_m:float,tr_181_m:float,tr_182_m:float,tr_183_m:float,tr_184_m:float,tr_185_m:float,tr_186_m:float,tr_187_m:float,tr_188_m:float,tr_189_m:float,tr_190_m:float,tr_191_m:float,tr_192_m:float,tr_193_m:float,tr_194_m:float,tr_195_m:float,tr_196_m:float,tr_197_m:float,tr_198_m:float,tr_199_m:float,tr_200_m:float,tr_201_m:float,tr_202_m:float,tr_203_m:float,tr_204_m:float,tr_205_m:float,tr_206_m:float,tr_207_m:float,tr_208_m:float,tr_209_m:float,tr_210_m:float,tr_211_m:float,tr_212_m:float,tr_213_m:float,tr_214_m:float,tr_215_m:float,tr_216_m:float,tr_217_m:float,tr_218_m:float,tr_219_m:float,tr_220_m:float,tr_221_m:float,tr_222_m:float,tr_223_m:float,tr_224_m:float,tr_225_m:float,tr_226_m:float,tr_227_m:float,tr_228_m:float,tr_229_m:float,tr_230_m:float,tr_231_m:float,tr_232_m:float,tr_233_m:float,tr_234_m:float,tr_235_m:float,tr_236_m:float,tr_237_m:float,tr_238_m:float,tr_239_m:float,tr_240_m:float,tr_241_m:float,tr_242_m:float,tr_243_m:float,tr_244_m:float,tr_245_m:float,tr_246_m:float,tr_247_m:float,tr_248_m:float,tr_249_m:float,tr_250_m:float,tr_251_m:float,tr_252_m:float,tr_253_m:float,tr_254_m:float,tr_255_m:float,tr_256_m:float,tr_257_m:float,tr_258_m:float,tr_259_m:float,tr_260_m:float,tr_261_m:float,tr_262_m:float,tr_263_m:float,tr_264_m:float,tr_265_m:float,tr_266_m:float,tr_267_m:float,tr_268_m:float,tr_269_m:float,tr_270_m:float,tr_271_m:float,tr_272_m:float,tr_273_m:float,tr_274_m:float,tr_275_m:float,tr_276_m:float,tr_277_m:float,tr_278_m:float,tr_279_m:float,tr_280_m:float,tr_281_m:float,tr_282_m:float,tr_283_m:float,tr_284_m:float,tr_285_m:float,tr_286_m:float,tr_287_m:float,tr_288_m:float,tr_289_m:float,tr_290_m:float,tr_291_m:float,tr_292_m:float,tr_293_m:float,tr_294_m:float,tr_295_m:float,tr_296_m:float,tr_297_m:float,tr_298_m:float,tr_299_m:float,tr_300_m:float,tr_301_m:float,tr_302_m:float,tr_303_m:float,tr_304_m:float,tr_305_m:float,tr_306_m:float,tr_307_m:float,tr_308_m:float,tr_309_m:float,tr_310_m:float,tr_311_m:float,tr_312_m:float,tr_313_m:float,tr_314_m:float,tr_315_m:float,tr_316_m:float,tr_317_m:float,tr_318_m:float,tr_319_m:float,tr_320_m:float,tr_321_m:float,tr_322_m:float,tr_323_m:float,tr_324_m:float,tr_325_m:float,tr_326_m:float,tr_327_m:float,tr_328_m:float,tr_329_m:float,tr_330_m:float,tr_331_m:float,tr_332_m:float,tr_333_m:float,tr_334_m:float,tr_335_m:float,tr_336_m:float,tr_337_m:float,tr_338_m:float,tr_339_m:float,tr_340_m:float,tr_341_m:float,tr_342_m:float,tr_343_m:float,tr_344_m:float,tr_345_m:float,tr_346_m:float,tr_347_m:float,tr_348_m:float,tr_349_m:float,tr_350_m:float,tr_351_m:float,tr_352_m:float,tr_353_m:float,tr_354_m:float,tr_355_m:float,tr_356_m:float,tr_357_m:float,tr_358_m:float,tr_359_m:float,tr_360_m:float
+used pipe(|) as the delimiter.
+Skipped one row which is the header
+Didn't skip the header row to make sure that the number of columns in header are the same as in the data
+------------------------------------
+
+
+rm(list=ls(all=TRUE))
+wd <- "C:/Users/R/Work/BestCreditAnalysis/Dev/rawdata/treasury"
+setwd(wd)
+inputFileWD <- paste(wd, "/input_1", sep = "")
+file.names <- dir(inputFileWD, pattern ="*")
+for(i in 1:length(file.names)){
+	tmpInputFile <- file.names[i] 
+	inputFile <- paste(inputFileWD, "/", tmpInputFile, sep = "")
+	print(inputFile)
+	outputFile <- paste("output/", chartr(".", "_", tmpInputFile), "_cubic_spline.csv" , sep = "")
+	warningFile <-  paste("output/", chartr(".", "_", tmpInputFile), "_warning.csv" , sep = "")
+	errorFile <-  paste("output/", chartr(".", "_", tmpInputFile), "_error.csv" , sep = "")
+	oHeader <- data.frame("as_of_date_int", "tr_0_m", "tr_1_m","tr_2_m","tr_3_m","tr_4_m","tr_5_m","tr_6_m","tr_7_m","tr_8_m","tr_9_m","tr_10_m","tr_11_m","tr_12_m","tr_13_m","tr_14_m","tr_15_m","tr_16_m","tr_17_m","tr_18_m","tr_19_m","tr_20_m","tr_21_m","tr_22_m","tr_23_m","tr_24_m","tr_25_m","tr_26_m","tr_27_m","tr_28_m","tr_29_m","tr_30_m","tr_31_m","tr_32_m","tr_33_m","tr_34_m","tr_35_m","tr_36_m","tr_37_m","tr_38_m","tr_39_m","tr_40_m","tr_41_m","tr_42_m","tr_43_m","tr_44_m","tr_45_m","tr_46_m","tr_47_m","tr_48_m","tr_49_m","tr_50_m","tr_51_m","tr_52_m","tr_53_m","tr_54_m","tr_55_m","tr_56_m","tr_57_m","tr_58_m","tr_59_m","tr_60_m","tr_61_m","tr_62_m","tr_63_m","tr_64_m","tr_65_m","tr_66_m","tr_67_m","tr_68_m","tr_69_m","tr_70_m","tr_71_m","tr_72_m","tr_73_m","tr_74_m","tr_75_m","tr_76_m","tr_77_m","tr_78_m","tr_79_m","tr_80_m","tr_81_m","tr_82_m","tr_83_m","tr_84_m","tr_85_m","tr_86_m","tr_87_m","tr_88_m","tr_89_m","tr_90_m","tr_91_m","tr_92_m","tr_93_m","tr_94_m","tr_95_m","tr_96_m","tr_97_m","tr_98_m","tr_99_m","tr_100_m","tr_101_m","tr_102_m","tr_103_m","tr_104_m","tr_105_m","tr_106_m","tr_107_m","tr_108_m","tr_109_m","tr_110_m","tr_111_m","tr_112_m","tr_113_m","tr_114_m","tr_115_m","tr_116_m","tr_117_m","tr_118_m","tr_119_m","tr_120_m","tr_121_m","tr_122_m","tr_123_m","tr_124_m","tr_125_m","tr_126_m","tr_127_m","tr_128_m","tr_129_m","tr_130_m","tr_131_m","tr_132_m","tr_133_m","tr_134_m","tr_135_m","tr_136_m","tr_137_m","tr_138_m","tr_139_m","tr_140_m","tr_141_m","tr_142_m","tr_143_m","tr_144_m","tr_145_m","tr_146_m","tr_147_m","tr_148_m","tr_149_m","tr_150_m","tr_151_m","tr_152_m","tr_153_m","tr_154_m","tr_155_m","tr_156_m","tr_157_m","tr_158_m","tr_159_m","tr_160_m","tr_161_m","tr_162_m","tr_163_m","tr_164_m","tr_165_m","tr_166_m","tr_167_m","tr_168_m","tr_169_m","tr_170_m","tr_171_m","tr_172_m","tr_173_m","tr_174_m","tr_175_m","tr_176_m","tr_177_m","tr_178_m","tr_179_m","tr_180_m","tr_181_m","tr_182_m","tr_183_m","tr_184_m","tr_185_m","tr_186_m","tr_187_m","tr_188_m","tr_189_m","tr_190_m","tr_191_m","tr_192_m","tr_193_m","tr_194_m","tr_195_m","tr_196_m","tr_197_m","tr_198_m","tr_199_m","tr_200_m","tr_201_m","tr_202_m","tr_203_m","tr_204_m","tr_205_m","tr_206_m","tr_207_m","tr_208_m","tr_209_m","tr_210_m","tr_211_m","tr_212_m","tr_213_m","tr_214_m","tr_215_m","tr_216_m","tr_217_m","tr_218_m","tr_219_m","tr_220_m","tr_221_m","tr_222_m","tr_223_m","tr_224_m","tr_225_m","tr_226_m","tr_227_m","tr_228_m","tr_229_m","tr_230_m","tr_231_m","tr_232_m","tr_233_m","tr_234_m","tr_235_m","tr_236_m","tr_237_m","tr_238_m","tr_239_m","tr_240_m","tr_241_m","tr_242_m","tr_243_m","tr_244_m","tr_245_m","tr_246_m","tr_247_m","tr_248_m","tr_249_m","tr_250_m","tr_251_m","tr_252_m","tr_253_m","tr_254_m","tr_255_m","tr_256_m","tr_257_m","tr_258_m","tr_259_m","tr_260_m","tr_261_m","tr_262_m","tr_263_m","tr_264_m","tr_265_m","tr_266_m","tr_267_m","tr_268_m","tr_269_m","tr_270_m","tr_271_m","tr_272_m","tr_273_m","tr_274_m","tr_275_m","tr_276_m","tr_277_m","tr_278_m","tr_279_m","tr_280_m","tr_281_m","tr_282_m","tr_283_m","tr_284_m","tr_285_m","tr_286_m","tr_287_m","tr_288_m","tr_289_m","tr_290_m","tr_291_m","tr_292_m","tr_293_m","tr_294_m","tr_295_m","tr_296_m","tr_297_m","tr_298_m","tr_299_m","tr_300_m","tr_301_m","tr_302_m","tr_303_m","tr_304_m","tr_305_m","tr_306_m","tr_307_m","tr_308_m","tr_309_m","tr_310_m","tr_311_m","tr_312_m","tr_313_m","tr_314_m","tr_315_m","tr_316_m","tr_317_m","tr_318_m","tr_319_m","tr_320_m","tr_321_m","tr_322_m","tr_323_m","tr_324_m","tr_325_m","tr_326_m","tr_327_m","tr_328_m","tr_329_m","tr_330_m","tr_331_m","tr_332_m","tr_333_m","tr_334_m","tr_335_m","tr_336_m","tr_337_m","tr_338_m","tr_339_m","tr_340_m","tr_341_m","tr_342_m","tr_343_m","tr_344_m","tr_345_m","tr_346_m","tr_347_m","tr_348_m","tr_349_m","tr_350_m","tr_351_m","tr_352_m","tr_353_m","tr_354_m","tr_355_m","tr_356_m","tr_357_m","tr_358_m","tr_359_m","tr_360_m")
+	#write the header line in the output file
+	write.table(oHeader, file=outputFile , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+	con  <- file(inputFile, open = "r")
+	i <- 1
+	while (length(oneLine <- readLines(con, n = 1)) > 0) {
+	  # first line in the file is header so skip the first line
+	   myLine <- unlist((strsplit(oneLine, ",")))
+	   x<-c(0,1,3,6,12,24,36,60,84,120,240,360)
+	   xout<-(0:360)
+	   try (
+	    
+	       if (i > 1 ) {
+	        asofdateint <- unlist((strsplit(myLine[1], "[|]")))
+	        #0 is already there in the inout file
+	        y<-c(myLine[2], myLine[3], myLine[4], myLine[5], myLine[6], myLine[7], myLine[8], myLine[9], myLine[10], myLine[11], myLine[12],myLine[13])
+	        #print(asofdateint)
+	        #print(y)
+	        result_trs <-spline(x, y, n = 3*length(x), method = "fmm", xmin = min(x), xmax = max(x), xout, ties = mean)
+	        result_out <-data.frame(asofdateint, t(result_trs$y)) 
+	        write.table(result_out, file=outputFile , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+	        #print(req3)
+	       }
+	     #print(i)
+	     
+	   ) # try ends here
+	   i <- i + 1
+	}  # while loop ends here
+	close(con)
+} # for-loop ends
+
+
+
+
+
+
+=================old work==========================
+
+x<-c(0,1,3,6,12,24,36,60,84,120,240,360)
+y<-c(0,0.01,0.02,0.03,0.11,0.59,1.08,1.82,2.26,2.57,3.04,3.28)
+xout<-(0:360)
+spline(x, y, n = 3*length(x), method = "fmm", xmin = min(x), xmax = max(x), xout, ties = mean)
+result_trs <-spline(x, y, n = 3*length(x), method = "fmm", xmin = min(x), xmax = max(x), xout, ties = mean)
+write.table(t(result_trs$y), file="raj5.csv" , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+
+write.csv(t(result_trs$y), file="raj4.csv")
+
+
+
+result_trs <- data.frame(myLine[1], myLine[2], myLine[3], regr_results[1]$Estimate[1], regr_results[1]$Estimate[2], regr_results[1]$Estimate[3], regr_results[1]$Estimate[4], 
+	                              summary(req3)$r.squared, summary(req3)$adj.r.squared, fstat[1], fstat[2], fstat[3],
+	                              pf(fstat[1], fstat[2], fstat[3], lower.tail=F)
+	                              
+outputFile<-"treasry_cs_result.csv"	                              )
+write.table(t(result_trs$y), file="raj5.csv" , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+write.csv(result_trs$y, file="raj2.csv" , sep = "|")

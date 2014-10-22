@@ -1,0 +1,415 @@
+
+good website -- http://rfunction.com/archives/1499
+
+names(summary(req3)) gives the name of the itens in req3 object which is a regression result ouput
+=================================================================================================================
+-- download data for YC generation in R
+
+export the below table to google cloud and save under gs://raj_test 
+[ODS_FIRSTBRIDGE_V2.SERIES] use the file name - gs://raj_test/ODS_FIRSTBRIDGE_V2_SERIES.csv
+
+and then download to local box and do R processing to generate Yield curves
+R code save the putput in C:\Users\R\Work\BestCreditAnalysis\Dev\rawdata\ytm\output
+upload these files to gs://yield_curve
+
+after the yc are generated and uploaded to google cloud as mentioned above
+for file source use    gs://yield_curve/*.* (*.csv won't work)
+deliliter is pipe (|)
+use the following schema to upload -  
+issuer_cd, offer_date, as_of_date, x0, x1, x2, x3, r_sqrd, adjusted_r_squared, fstat_value, fstat_numdf, fstat_dendf, p_value
+
+uploaded into ODS_YIELD_CURVE.YIELD_CURVE records uploaded - 19,365,538
+original records  - 19,367,533 
+
+delete  the files after load from gs://yield_curve/ to avoid billing charges
+============working code with looping for file names in directory================================================
+rm(list=ls(all=TRUE))
+wd <- "C:/Users/R/Work/BestCreditAnalysis/Dev/rawdata/ytm"
+setwd(wd)
+inputFileWD <- paste(wd, "/input_test", sep = "")
+#files <- list.files(path=inputFileWD, pattern="*", full.names=T, recursive=FALSE)
+file.names <- dir(inputFileWD, pattern ="*")
+for(i in 1:length(file.names)){
+	#rm(list=ls(all=TRUE))
+	#setwd("C:/Users/R/Work/BestCreditAnalysis/Dev/rawdata/ytm")
+	#tmpInputFile <- "ytm_data_000000000013"
+	#tmpInputFile <- "ytm_data_000000000000"
+	#tmpInputFile <- "rajtest1.txt"
+	tmpInputFile <- file.names[i] 
+	inputFile <- paste(inputFileWD, "/", tmpInputFile, sep = "")
+	print(inputFile)
+	outputFile <- paste("output/", chartr(".", "_", tmpInputFile), "_regr_result.csv" , sep = "")
+	warningFile <-  paste("output/", chartr(".", "_", tmpInputFile), "_warning.csv" , sep = "")
+	errorFile <-  paste("output/", chartr(".", "_", tmpInputFile), "_error.csv" , sep = "")
+	oHeader <- data.frame("fISSUER_CD","fOFFERING_DATE_INT","fCUSIP_7TH","fISSUE_ID","fOFFER_TYPE","fIS_CALLABLE",
+	                      "fDEFAULT_FLAG","fCAPITAL_PURPOSE","fAS_OF_DATE_INT","fBCA_PRICE_SOURCE_TYPE_ID","fBCA_PRICE_SOURCE_ID",
+	                      "fBCA_PRICE_TYPE_ID", "SERIES_COUNT",
+	                      "x0", "x1", "x2", "x3", "r_sqrd", "adjusted_r_squared", "fstat_value", "fstat_numdf", "fstat_dendf", "p_value")
+	write.table(oHeader, file=outputFile , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+	#write the header line in the output file
+	con  <- file(inputFile, open = "r")
+	i <- 1
+	while (length(oneLine <- readLines(con, n = 1)) > 0) {
+	  # first line in the file is header so skip the first line
+	   myLine <- unlist((strsplit(oneLine, ",")))
+	   try (
+	    
+	       if (i > 1) {
+	        #myLine <- unlist((strsplit(oneLine, ",")))
+	   
+	        ytmData <- unlist((strsplit(myLine[13], "[|]")))
+	        tmp <- unlist(strsplit(ytmData, "[:]"))
+	        mat <- matrix(tmp, ncol=2, byrow=TRUE)
+	        df   <- as.data.frame(mat)
+	        colnames(df) <- c("X_POS", "fYTM")
+	        df$X_POS = as.numeric(levels(df$X_POS))[df$X_POS]
+	        df$fYTM = as.numeric(levels(df$fYTM))[df$fYTM]
+	        sorted_ytm <- df[order(df$X_POS),]
+	        #print(sorted_ytm)
+	        req3 <- lm(fYTM ~ poly(X_POS, 3, raw=TRUE), data=sorted_ytm)
+	        regr_results <- data.frame(summary(req3)$coefficients)
+	        fstat <-summary(req3)$fstatistic
+	        resultdf <- data.frame(myLine[1], myLine[2], myLine[3],myLine[4], myLine[5], myLine[6],myLine[7], myLine[8], myLine[9],myLine[10], myLine[11], myLine[12], myLine[14],
+	                               regr_results[1]$Estimate[1], regr_results[1]$Estimate[2], regr_results[1]$Estimate[3], regr_results[1]$Estimate[4], 
+	                               summary(req3)$r.squared, summary(req3)$adj.r.squared, fstat[1], fstat[2], fstat[3],
+	                               pf(fstat[1], fstat[2], fstat[3], lower.tail=F)
+	                              
+	                              )
+	        write.table(resultdf, file=outputFile , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+	        #print(req3)
+	       }
+	     #print(i)
+	     
+	   ) # try ends here
+	   i <- i + 1
+	}  # while loop ends here
+	close(con)
+} # for-loop ends
+
+
+
+=================================================================================================================
+
+
+
+
+
+============working code with looping for file names in directory================================================
+rm(list=ls(all=TRUE))
+wd <- "C:/Users/R/Work/BestCreditAnalysis/Dev/rawdata/ytm"
+setwd(wd)
+inputFileWD <- paste(wd, "/input_2", sep = "")
+#files <- list.files(path=inputFileWD, pattern="*", full.names=T, recursive=FALSE)
+file.names <- dir(inputFileWD, pattern ="*")
+for(i in 1:length(file.names)){
+	#rm(list=ls(all=TRUE))
+	#setwd("C:/Users/R/Work/BestCreditAnalysis/Dev/rawdata/ytm")
+	#tmpInputFile <- "ytm_data_000000000013"
+	#tmpInputFile <- "ytm_data_000000000000"
+	#tmpInputFile <- "rajtest1.txt"
+	tmpInputFile <- file.names[i] 
+	inputFile <- paste(inputFileWD, "/", tmpInputFile, sep = "")
+	print(inputFile)
+	outputFile <- paste("output/", chartr(".", "_", tmpInputFile), "_regr_result.csv" , sep = "")
+	warningFile <-  paste("output/", chartr(".", "_", tmpInputFile), "_warning.csv" , sep = "")
+	errorFile <-  paste("output/", chartr(".", "_", tmpInputFile), "_error.csv" , sep = "")
+	oHeader <- data.frame("issuer_cd", "offer_date", "as_of_date", "x0", "x1", "x2", "x3", "r_sqrd", "adjusted_r_squared", "fstat_value", "fstat_numdf", "fstat_dendf", "p_value")
+	write.table(oHeader, file=outputFile , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+	#write the header line in the output file
+	con  <- file(inputFile, open = "r")
+	i <- 1
+	while (length(oneLine <- readLines(con, n = 1)) > 0) {
+	  # first line in the file is header so skip the first line
+	   myLine <- unlist((strsplit(oneLine, ",")))
+	   try (
+	    
+	       if (i > 1) {
+	        #myLine <- unlist((strsplit(oneLine, ",")))
+	   
+	        ytmData <- unlist((strsplit(myLine[4], "[|]")))
+	        tmp <- unlist(strsplit(ytmData, "[:]"))
+	        mat <- matrix(tmp, ncol=2, byrow=TRUE)
+	        df   <- as.data.frame(mat)
+	        colnames(df) <- c("X_POS", "fYTM")
+	        df$X_POS = as.numeric(levels(df$X_POS))[df$X_POS]
+	        df$fYTM = as.numeric(levels(df$fYTM))[df$fYTM]
+	        sorted_ytm <- df[order(df$X_POS),]
+	        #print(sorted_ytm)
+	        req3 <- lm(fYTM ~ poly(X_POS, 3, raw=TRUE), data=sorted_ytm)
+	        regr_results <- data.frame(summary(req3)$coefficients)
+	        fstat <-summary(req3)$fstatistic
+	        resultdf <- data.frame(myLine[1], myLine[2], myLine[3], regr_results[1]$Estimate[1], regr_results[1]$Estimate[2], regr_results[1]$Estimate[3], regr_results[1]$Estimate[4], 
+	                              summary(req3)$r.squared, summary(req3)$adj.r.squared, fstat[1], fstat[2], fstat[3],
+	                              pf(fstat[1], fstat[2], fstat[3], lower.tail=F)
+	                              
+	                              )
+	        write.table(resultdf, file=outputFile , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+	        #print(req3)
+	       }
+	     #print(i)
+	     
+	   ) # try ends here
+	   i <- i + 1
+	}  # while loop ends here
+	close(con)
+} # for-loop ends
+
+
+
+=================================================================================================================
+working code 1 ->
+
+rm(list=ls(all=TRUE))
+setwd("C:/Users/R/Work/BestCreditAnalysis/Dev/rawdata/ytm")
+#tmpInputFile <- "ytm_data_000000000013"
+tmpInputFile <- "ytm_data_000000000000"
+#tmpInputFile <- "rajtest1.txt"
+#tmpInputFile <- "rajtest1_warning.txt"
+inputFile <- paste("input/", tmpInputFile, sep = "")
+outputFile <- paste("output/", chartr(".", "_", tmpInputFile), "_regr_result.csv" , sep = "")
+warningFile <-  paste("output/", chartr(".", "_", tmpInputFile), "_warning.csv" , sep = "")
+errorFile <-  paste("output/", chartr(".", "_", tmpInputFile), "_error.csv" , sep = "")
+oHeader <- data.frame("issuer_cd", "offer_date", "as_of_date", "x0", "x1", "x2", "x3", "r_sqrd", "adjusted_r_squared", "fstat_value", "fstat_numdf", "fstat_dendf", "p_value")
+write.table(oHeader, file=outputFile , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+#write the header line in the output file
+con  <- file(inputFile, open = "r")
+i <- 1
+while (length(oneLine <- readLines(con, n = 1)) > 0) {
+  # first line in the file is header so skip the first line
+   myLine <- unlist((strsplit(oneLine, ",")))
+   try (
+    
+       if (i > 1) {
+        #myLine <- unlist((strsplit(oneLine, ",")))
+   
+        ytmData <- unlist((strsplit(myLine[4], "[|]")))
+        tmp <- unlist(strsplit(ytmData, "[:]"))
+        mat <- matrix(tmp, ncol=2, byrow=TRUE)
+        df   <- as.data.frame(mat)
+        colnames(df) <- c("X_POS", "fYTM")
+        df$X_POS = as.numeric(levels(df$X_POS))[df$X_POS]
+        df$fYTM = as.numeric(levels(df$fYTM))[df$fYTM]
+        sorted_ytm <- df[order(df$X_POS),]
+        #print(sorted_ytm)
+        req3 <- lm(fYTM ~ poly(X_POS, 3, raw=TRUE), data=sorted_ytm)
+        regr_results <- data.frame(summary(req3)$coefficients)
+        fstat <-summary(req3)$fstatistic
+        resultdf <- data.frame(myLine[1], myLine[2], myLine[3], regr_results[1]$Estimate[1], regr_results[1]$Estimate[2], regr_results[1]$Estimate[3], regr_results[1]$Estimate[4], 
+                              summary(req3)$r.squared, summary(req3)$adj.r.squared, fstat[1], fstat[2], fstat[3],
+                              pf(fstat[1], fstat[2], fstat[3], lower.tail=F)
+                              
+                              )
+        write.table(resultdf, file=outputFile , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+        #print(req3)
+       }
+     #print(i)
+     
+   ) # try ends here
+   i <- i + 1
+}  # while loop ends here
+close(con)
+
+=============================================================================================================================================
+
+
+-- not working negative tests not throwing eerror and progressing code 1-->
+rm(list=ls(all=TRUE))
+setwd("C:/Users/R/Work/BestCreditAnalysis/Dev/rawdata/ytm")
+#tmpInputFile <- "ytm_data_000000000013"
+#tmpInputFile <- "rajtest1.txt"
+tmpInputFile <- "rajtest1_warning.txt"
+inputFile <- paste("input/", tmpInputFile, sep = "")
+outputFile <- paste("output/", chartr(".", "_", tmpInputFile), "_regr_result.csv" , sep = "")
+warningFile <-  paste("output/", chartr(".", "_", tmpInputFile), "_warning.csv" , sep = "")
+errorFile <-  paste("output/", chartr(".", "_", tmpInputFile), "_error.csv" , sep = "")
+oHeader <- data.frame("issuer_cd", "offer_date", "as_of_date", "x0", "x1", "x2", "x3", "r_sqrd", "adjusted_r_squared", "fstat_value", "fstat_numdf", "fstat_dendf", "p_value")
+write.table(oHeader, file=outputFile , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+#write the header line in the output file
+con  <- file(inputFile, open = "r")
+i <- 1
+while (length(oneLine <- readLines(con, n = 1)) > 0) {
+  # first line in the file is header so skip the first line
+   myLine <- unlist((strsplit(oneLine, ",")))
+   tryCatch (
+     {
+       if (i > 1) {
+        #myLine <- unlist((strsplit(oneLine, ",")))
+   
+        ytmData <- unlist((strsplit(myLine[4], "[|]")))
+        tmp <- unlist(strsplit(ytmData, "[:]"))
+        mat <- matrix(tmp, ncol=2, byrow=TRUE)
+        df   <- as.data.frame(mat)
+        colnames(df) <- c("X_POS", "fYTM")
+        df$X_POS = as.numeric(levels(df$X_POS))[df$X_POS]
+        df$fYTM = as.numeric(levels(df$fYTM))[df$fYTM]
+        sorted_ytm <- df[order(df$X_POS),]
+        #print(sorted_ytm)
+        req3 <- lm(fYTM ~ poly(X_POS, 3, raw=TRUE), data=sorted_ytm)
+        regr_results <- data.frame(summary(req3)$coefficients)
+        fstat <-summary(req3)$fstatistic
+        resultdf <- data.frame(myLine[1], myLine[2], myLine[3], regr_results[1]$Estimate[1], regr_results[1]$Estimate[2], regr_results[1]$Estimate[3], regr_results[1]$Estimate[4], 
+                              summary(req3)$r.squared, summary(req3)$adj.r.squared, fstat[1], fstat[2], fstat[3],
+                              pf(fstat[1], fstat[2], fstat[3], lower.tail=F)
+                              
+                              )
+        write.table(resultdf, file=outputFile , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+        #print(req3)
+       }
+     #print(i)
+     },  # main tryCatch expr block end
+       warning = function(w) {
+                    write.table( data.frame(warning, myLine[1], myLine[2], myLine[3]) , file=warningFile , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+     }, error = function(e) {
+                    write.table( data.frame(warning, myLine[1], myLine[2], myLine[3]) , file=errorFile , sep = "|", append=TRUE, quote = FALSE, row.names = FALSE, col.names = FALSE)
+     }, finally = {
+      print("SUCCESS")
+     }
+   ) # try ends here
+   i <- i + 1
+}  # while loop ends here
+close(con)
+
+
+--working code 2
+
+#inputFile <- "rajtest1.txt"
+inputFile <- "ytm_data_000000000013"
+s = file.info( inputFile )$size 
+ buf = readChar( inputFile, s, useBytes=T)
+ tmplines <- strsplit( buf,"\n",fixed=T,useBytes=T)[[1]]
+ numlineswithheader <- length(tmplines)
+ tmplinesnoheader <- tmplines[2:numlines]
+ numlineswithoutheader <- length(tmplinesnoheader)
+ print(numlineswithheader)
+ print(numlineswithoutheader)
+ for (singleline in tmplinesnoheader) {
+    tmpline <- unlist((strsplit(singleline, ",")))
+    ytmData <- unlist((strsplit(tmpline[4], "[|]")))
+    tmp <- unlist(strsplit(ytmData, "[:]"))
+    mat <- matrix(tmp, ncol=2, byrow=TRUE)
+    df   <- as.data.frame(mat)
+    colnames(df) <- c("X_POS", "fYTM")
+    df$X_POS = as.numeric(levels(df$X_POS))[df$X_POS]
+    df$fYTM = as.numeric(levels(df$fYTM))[df$fYTM]
+    #print(df)
+    sorted_ytm <- df[order(df$X_POS),]
+    #print(sorted_ytm)
+    req3 <- lm(fYTM ~ poly(X_POS, 3, raw=TRUE), data=sorted_ytm)
+    #print(req3)
+ }
+
+
+================================================================
+ 
+req3 <- lm(fYTM ~ poly(X_POS, 3, raw=TRUE), data=sorted_ytm)
+
+
+-------------------------------------------
+df$X_POS = as.numeric(levels(df$X_POS))[df$X_POS]
+df$fYTM = as.numeric(levels(df$fYTM))[df$fYTM]
+transform(df, X_POS = as.numeric(levels(X_POS))[X_POS], fYTM = as.numeric(levels(fYTM))[fYTM])
+
+inputFile <- "rajtest1.txt"
+con  <- file(inputFile, open = "r")
+while (length(oneLine <- readLines(con, n = 1)) > 0) {
+  myLine <- unlist((strsplit(oneLine, ",")))
+  mat <- matrix(myLine, ncol=4, byrow=TRUE)
+  df   <- as.data.frame(mat)
+  df$V4
+  #print(myLine)
+  #print(issuer_cd)
+} 
+close(con)
+
+
+
+
+
+ytm = read.csv("ytm_s.txt",  header=1)  # read csv file 
+ytm$YTM_DATA[order()
+
+
+
+
+ytm_no_header
+
+ytm = read.csv("ytm.csv")  # read csv file 
+sorted_ytm <- ytm[order(ytm$X_POS),] 
+req3 <- lm(fYTM ~ poly(X_POS, 3, raw=TRUE), data=sorted_ytm)
+
+scan("ytm_s.txt", character(0)) # separate each word
+scan("ytm_s.txt", character(0), quote = NULL) # get rid of quotes
+scan("ytm_s.txt", character(0), sep = ".") # separate each sentence
+scan("ytm_s.txt", character(0), sep = "\n") # separate each line
+
+
+------------------------------------------------------------------
+setwd("C:/Users/R/Work/BestCreditAnalysis/Dev/rawdata/ytm") 
+ytm = read.csv("ytm.csv",  header=1)  # read csv file 
+sorted_ytm <- ytm[order(ytm$X_POS),] 
+req3 <- lm(fYTM ~ poly(X_POS, 3, raw=TRUE), data=sorted_ytm)
+
+
+writing output to a .csv file--
+# coefficients in dataframe
+regr_results <- data.frame(summary(req3)$coefficients)
+
+# grab the coefficients
+colnames(regr_results) <- colnames(summary(req3)$coefficients)
+
+# get the p-vals 
+regr_results[ ,4] <- ifelse(regr_results[ ,4] < .001, "< 0.001", 
+                        ifelse(regr_results[ ,4] < .01, "< 0.01", 
+                               round(regr_results[ ,4], 3)))
+# format the table
+formattedOutput = format(regr_results, autoformat = 1)
+ 
+# write it as a csv file 
+write.csv(formattedOutput, paste("RAJ.CSV","_model_coeff.csv", sep=''))                               
+
+---------------------------
+months <- c(-163.3666667,-151.2,-139.0333333,-114.6666667,-102.5,-90.33333333,-78.16666667,-65.96666667,-41.63333333,-29.46666667,7.066666667,7.066666667,92.3,116.6333333,128.8333333,153.1666667)
+ytm <- c(3.6888,3.9366,4.1798,4.673,4.7844,4.8898,5.0016,5.1366,5.2456,5.3204,5.5564,5.622654147,5.6988,5.7696,5.2824,5.8294)
+issuer_asof1 <- data.frame(months, ytm)
+plot(issuer_asof1$months, issuer_asof1$ytm, type="b")
+
+req3 <- lm(issuer_asof1$ytm ~ issuer_asof1$months + I(issuer_asof1$months^2) + I(issuer_asof1$months^3))
+
+req3 <- lm(issuer_asof1$ytm ~ poly(issuer_asof1$months, 3, raw=TRUE)) 
+
+plot(issuer_asof1$months, issuer_asof1$ytm)
+----------------------------------
+sample code -
+R code for polynomial regression Ex 8.6 p 336 
+# R code for steroid levels, ex8.6, p336 
+steroid=read.table("C:/Users/Mihinda/Desktop/steroid.txt", header=1) 
+#the data file 
+steroid 
+plot(steroid$x, steroid$y) 
+# x= ahe of the subject 
+# y = steroid level 
+sorted <- steroid[order(steroid$x),] 
+sorted 
+# The plots require the data to be sorted in this case. 
+fit1 <- lm(y ~ poly(x, 1, raw=TRUE), data=sorted) 
+summary(fit1) 
+anova(fit1) 
+fit2 <- lm(y ~ poly(x, 2, raw=TRUE), data=sorted) 
+# if we do not specify raw=TRUE , the function poly give us the values 
+#of the beta parameters of orthogonal polynomials, which is different 
+from 
+#what we want here. 
+summary(fit2) 
+anova(fit2) 
+par(mfrow=c(2,2)) 
+plot(sorted$x, sorted$y) 
+points(sorted$x, predict(fit2), type="l", col="red") 
+plot(fitted(fit1),residuals(fit1)) 
+plot(fitted(fit2),residuals(fit2)) 
+fit3 <- lm(y ~ poly(x, 3, raw=TRUE), data=sorted) 
+summary(fit3) 
+anova(fit3) 
+x0 <- data.frame(x=15) 
+predict(fit2, x0) 
+#CI for the mean of Y at x=x0 
+predict(fit2, x0, interval="confidence", level=0.95) 
